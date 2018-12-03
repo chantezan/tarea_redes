@@ -74,8 +74,8 @@ class Genetico:
 			j += 1
 			aleatorios_evaluados,mejor = self.evaluar(self.objetivo,aleatorios)
 			if(mejor == objetivo):
-				print "encontro"
-				print mejor
+				print ("encontro")
+				print (mejor)
 				break
 			padre1 = self.torneo(aleatorios_evaluados,self.number_sampling,self.objetivo)
 			padre2 = self.torneo(aleatorios_evaluados,self.number_sampling,self.objetivo)

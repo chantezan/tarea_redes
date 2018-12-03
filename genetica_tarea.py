@@ -9,10 +9,11 @@ class Genetico:
 		self.generador = generador
 		self.objetivo = objetivo
 		self.number_children = number_children
-		self.number_sampling = number_children * 3 / 4
+		self.number_sampling = int(number_children * 3 / 4)
 		self.iteraciones = iteraciones
 		self.valores = []
 		self.promedios =  []
+		self.encontrado = False
 
 	def iniciar(self):
 		lista = []
@@ -98,6 +99,7 @@ class Genetico:
 		aleatorios = self.iniciar()
 		j = 0
 		while(self.iteraciones > j):
+			j += 1
 			terminar = False
 			solucion = None
 			indice = 0
@@ -107,16 +109,31 @@ class Genetico:
 					terminar = True
 				indice += 1
 			if(terminar):
-				print "solucion encontrada",solucion
+				self.encontrado = True
+				print ("solucion encontrada",solucion)
 				break
 			padre1 = self.torneo(aleatorios)
 			padre2 = self.torneo(aleatorios)
 			aleatorios = self.generarHijos(aleatorios[padre1],aleatorios[padre2])
-			j += 1
-		#print aleatorios
-		plt.title(str(self.objetivo) + " Reinas - iteraciones: " + str(j) + "," + str(time.time() - tiempo_inicial)+"s")
-        plt.plot(range(0, 1), [1])
-        plt.show()
+		self.iter = j
+		self.duracion = int(time.time()*100 - tiempo_inicial*100)/100
+
+	def save(self,rand):
+		if(self.encontrado):
+			enc = "Encontrado"
+			n = 1
+		else:
+			enc = "No Encontrado"
+			n = 0
+		plt.figure()
+		plt.title(str(rand) + ": " + str(self.objetivo) + " Reinas - iteraciones: " + str(self.iter) + ", " + str(
+			self.duracion) + "s, " + enc)
+		plt.plot(range(0, len(self.promedios)), self.promedios)
+		plt.savefig("Q" + str(self.objetivo)+"R"+str(rand)+"F"+str(n))
+		file = open("datos2.txt", "a")
+		file.write("Reinas:" + str(self.objetivo) + "\t" "Solucion:" + enc + "\t" + "tiempo:" + str(self.duracion)+"\n")
+		file.close()
+
 
 def generator_string_number():
 	return random.choice(string.ascii_lowercase + ' ' + string.digits)
@@ -130,16 +147,17 @@ def generator_byte():
 def generador_queen(n):
 	return random.randint(0, n-1)
 
-for j in range(12):
-	for i in range(4):
+for j in range(24):
+	for i in range(20):
 		seed = i + 15
 		random.seed(seed) #17 objetivo 16
 		objetivo = j + 4
-		genetico = Genetico(generador_queen,objetivo,number_children = 200,iteraciones = 10000)
-		print "seed-----------------------------------------------------------------",seed
+		genetico = Genetico(generador_queen,objetivo,number_children = 500,iteraciones = 500)
+		print ("seed-----------------------------------------------------------------",seed)
 		#print genetico.fitness("2031")
 		#print genetico.fitness("2013")
 		#print genetico.fitness("3102")
 		genetico.run()
+		genetico.save(i)
 
 
